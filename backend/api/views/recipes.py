@@ -1,19 +1,20 @@
-from api.filters import IngredientFilter, RecipeFilter
-from api.paginations import LimitPagination
-from api.permissions import IsAuthorOrReadOnly
-from api.serializers.recipes import (FavoriteSerializer, IngredientSerializer,
-                                     RecipeSerializer, ShoppingCartSerializer,
-                                     TagSerializer)
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 from reportlab.pdfbase import pdfmetrics, ttfonts
 from reportlab.pdfgen import canvas
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+
+from api.filters import IngredientFilter, RecipeFilter
+from api.paginations import LimitPagination
+from api.permissions import IsAuthorOrReadOnly
+from api.serializers.recipes import (FavoriteSerializer, IngredientSerializer,
+                                     RecipeSerializer, ShoppingCartSerializer,
+                                     TagSerializer)
+from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
@@ -39,7 +40,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filterset_class = RecipeFilter
     permission_classes = (IsAuthorOrReadOnly,)
     pagination_class = LimitPagination
-    
+
     def post_method_for_actions(request, pk, serializers):
         data = {'user': request.user.id, 'recipe': pk}
         serializer = serializers(data=data, context={'request': request})
@@ -47,7 +48,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
+                        status=status.HTTP_400_BAD_REQUEST)
 
     def delete_method_for_actions(request, pk, model):
         user = request.user

@@ -6,9 +6,8 @@ from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
-from api.paginations import LimitPagination
 from api.serializers.users import FollowSerializer, UsersSerializer
-from users.models import Follow, User
+from users.models import User
 
 
 class UsersViewSet(UserViewSet):
@@ -20,14 +19,12 @@ class UsersViewSet(UserViewSet):
         if self.action == 'me':
             self.permission_classes = (IsAuthenticated,)
         return super().get_permissions()
-    
+
     @action(detail=True, methods=['post'])
     def subscribe(self, request, id):
         user = request.user
         author = get_object_or_404(User, id=id)
-        serializer = FollowSerializer(author,
-                                           context={'request': request})
-        if subscription.exists():
+        if subscrsiption.exists():
             return Response({'error': 'Вы уже подписаны'},
                             status=status.HTTP_400_BAD_REQUEST)
         if user == author:

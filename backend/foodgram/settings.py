@@ -1,5 +1,5 @@
 import os
-from datetime import timedelta
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -8,12 +8,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = SECRET_KEY = os.environ.get('SECRET_KEY')
 
-DEBUG = os.getenv('DEBUG', default=True)
+DEBUG = True
 
-ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'localhost',
-]
+ALLOWED_HOSTS = ['*']
 
 
 INSTALLED_APPS = [
@@ -135,4 +132,3 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'back_static/')
 
 MEDIA_URL = '/back_media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'back_media/')
-
