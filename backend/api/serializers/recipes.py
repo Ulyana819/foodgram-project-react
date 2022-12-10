@@ -2,10 +2,10 @@ import base64
 
 from api.serializers.users import UsersSerializer
 from django.core.files.base import ContentFile
-from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                             ShoppingCart, Tag)
+from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 
 class Base64ImageField(serializers.ImageField):
