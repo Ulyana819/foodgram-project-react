@@ -1,17 +1,21 @@
 version: '3.3'
 services:
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    volumes:
-      - ../frontend/:/app/result_build/
-
   db:
     image: postgres:13.0-alpine
     volumes:
       - postgres:/var/lib/postgres/data/
+    env_file:
+      - ./.env
+
+  web:
+    image: ulyana819/foodgram-project-react:latest
+    restart: always
+    volumes:
+      - static_value:/app/static/
+      - media_value:/app/media/
+    depends_on:
+      - db
     env_file:
       - ./.env
 
@@ -26,20 +30,7 @@ services:
       - static_value:/var/html/back_static/
       - media_value:/var/html/back_media/
     depends_on:
-      - backend
-
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    restart: always
-    volumes:
-      - static_value:/app/back_static/
-      - media_value:/app/back_media/
-    depends_on:
-      - db
-    env_file:
-      - ./.env
+      - web
 
 volumes:
   static_value:
