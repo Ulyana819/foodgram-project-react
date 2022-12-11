@@ -5,7 +5,7 @@ __pycache__/
 
 *.so
 
-# Distribtion / packaging
+# Distrition / packaging
 .Python
 build/
 develop-eggs/
