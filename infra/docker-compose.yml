@@ -2,7 +2,7 @@ version: '3.3'
 services:
 
   frontend:
-    image: ulyana819/foodgram_frontend:latest
+    image: ulyana819/foodgram_frontend:v1.0
     volumes:
       - ../frontend/:/app/result_build/
 
@@ -27,7 +27,7 @@ services:
       - backend
 
   backend:
-    image: ulyana819/foodgram_frontend:latest
+    image: ulyana819/foodgram_frontend:v1.0
     restart: always
     volumes:
       - static_value:/app/back_static/
