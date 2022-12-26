@@ -32,8 +32,8 @@ class UsersViewSet(UserViewSet):
 
     @action(detail=True, methods=['delete'])
     def subscription_delete(self, request):
-        if subscription.exists():
-            subscription.delete()
+        if subscribe.exists():
+            subscribe.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
             return Response({'error': 'Вы не подписаны на этого пользователя'},
                             status=status.HTTP_400_BAD_REQUEST)
