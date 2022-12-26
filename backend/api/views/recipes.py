@@ -60,15 +60,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def favorite(self, request, pk):
         if request.method == 'POST':
             return self.post_method_for_actions(pk, FavoriteSerializer)
-        else:
-            return self.delete_method_for_actions(pk, FavoriteSerializer)
+        return self.delete_method_for_actions(pk, FavoriteSerializer)
 
     @action(methods=['POST', 'DELETE'], detail=True)
     def shopping_cart(self, request, pk):
         if request.method == 'POST':
             return self.post_method_for_actions(pk, ShoppingCartSerializer)
-        else:
-            return self.delete_method_for_actions(pk, ShoppingCartSerializer)
+        return self.delete_method_for_actions(pk, ShoppingCartSerializer)
 
     @action(detail=False)
     def download_shopping_cart(self, request):
