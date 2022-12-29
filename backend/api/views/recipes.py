@@ -40,33 +40,36 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthorOrReadOnly,)
     pagination_class = LimitPagination
 
-    def post_method_for_actions(request, pk, serializers):
-        data = {'user': request.user.id, 'recipe': pk}
-        serializer = serializers(data=data, context={'request': request})
-        if serializer.is_valid(raise_exception=True):
+    def action_post_delete(self, pk, serializer_class):
+        user = self.request.user
+        recipe = get_object_or_404(Recipe, pk=pk)
+        object = serializer_class.Meta.model.objects.filter(
+            user=user, recipe=recipe
+        )
+
+        if self.request.method == 'POST':
+            serializer = serializer_class(
+                data={'user': user.id, 'recipe': pk},
+                context={'request': self.request}
+            )
+            serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors,
-                        status=status.HTTP_400_BAD_REQUEST)
 
-    def delete_method_for_actions(request, pk, model):
-        user = request.user
-        recipe = get_object_or_404(Recipe, id=pk)
-        model_instance = get_object_or_404(model, user=user, recipe=recipe)
-        model_instance.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        if self.request.method == 'DELETE':
+            if object.exists():
+                object.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response({'error': 'Этого рецепта нет в списке'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=['POST', 'DELETE'], detail=True)
     def favorite(self, request, pk):
-        if request.method == 'POST':
-            return self.post_method_for_actions(pk, FavoriteSerializer)
-        return self.delete_method_for_actions(pk, FavoriteSerializer)
+        return self.action_post_delete(pk, FavoriteSerializer)
 
     @action(methods=['POST', 'DELETE'], detail=True)
     def shopping_cart(self, request, pk):
-        if request.method == 'POST':
-            return self.post_method_for_actions(pk, ShoppingCartSerializer)
-        return self.delete_method_for_actions(pk, ShoppingCartSerializer)
+        return self.action_post_delete(pk, ShoppingCartSerializer)
 
     @action(detail=False)
     def download_shopping_cart(self, request):

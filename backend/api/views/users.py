@@ -19,22 +19,29 @@ class UsersViewSet(UserViewSet):
             self.permission_classes = (IsAuthenticated,)
         return super().get_permissions()
 
-    @action(detail=True, methods=['post'])
+    @action(methods=['POST', 'DELETE'],
+            detail=True, )
     def subscribe(self, request, id):
         user = request.user
         author = get_object_or_404(User, id=id)
-        if subscrsiption.exists():
-            return Response({'error': 'Вы уже подписаны'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        if user == author:
-            return Response({'error': 'Невозможно подписаться на себя'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        subscription = Follow.objects.filter(
+            user=user, author=author)
 
-    @action(detail=True, methods=['delete'])
-    def subscription_delete(self, request):
-        if subscribe.exists():
-            subscribe.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+        if request.method == 'POST':
+            if subscription.exists():
+                return Response({'error': 'Вы уже подписаны'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if user == author:
+                return Response({'error': 'Невозможно подписаться на себя'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            serializer = FollowSerializer(author, context={'request': request})
+            Follow.objects.create(user=user, author=author)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        if request.method == 'DELETE':
+            if subscription.exists():
+                subscription.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
             return Response({'error': 'Вы не подписаны на этого пользователя'},
                             status=status.HTTP_400_BAD_REQUEST)
 

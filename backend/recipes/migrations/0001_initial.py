@@ -68,7 +68,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=16, unique=True, verbose_name='Название')),
                 ('color', models.CharField(max_length=16, verbose_name='Цвет')),
-                ('slug', models.SlugField(max_length=16, unique=True, verbose_name='Слаг')),
+                ('slug', models.SlugField(max_length=16, verbose_name='Слаг')),
             ],
             options={
                 'verbose_name': 'Тег',
