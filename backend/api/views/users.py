@@ -26,7 +26,6 @@ class UsersViewSet(UserViewSet):
         author = get_object_or_404(User, id=id)
         subscription = Follow.objects.filter(
             user=user, author=author)
-
         if subscription.exists():
             return Response({'error': 'Вы уже подписаны'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -37,8 +36,6 @@ class UsersViewSet(UserViewSet):
         Follow.objects.create(user=user, author=author)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    @action(methods=['DELETE'],
-            detail=True, )
     def subscribe_delete(self, request, id):
         user = request.user
         author = get_object_or_404(User, id=id)
