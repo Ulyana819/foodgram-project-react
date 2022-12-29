@@ -6,7 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
-from users.models import User, Follow
+from users.models import Follow, User
 
 
 class UsersViewSet(UserViewSet):
