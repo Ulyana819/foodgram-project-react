@@ -39,13 +39,13 @@ class UsersViewSet(UserViewSet):
     def subscribe_delete(self, request, id):
         user = request.user
         author = get_object_or_404(User, id=id)
-        subscription = Follow.objects.filter(
-            user=user, author=author)
-        if subscription.exists():
-            subscription.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response({'error': 'Вы не подписаны на этого пользователя'},
-                        status=status.HTTP_400_BAD_REQUEST)
+        subscription = get_object_or_404(
+            Follow,
+            user=user,
+            author=author
+        )
+        subscription.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=False, permission_classes=[IsAuthenticated])
     def subscriptions(self, request):
