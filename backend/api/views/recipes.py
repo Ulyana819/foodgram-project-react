@@ -41,6 +41,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     pagination_class = LimitPagination
 
     def action_post(self, pk, serializer_class):
+        user = self.request.user
         serializer = serializer_class(
             data={'user': user.id, 'recipe': pk},
             context={'request': self.request}
