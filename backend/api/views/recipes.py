@@ -40,36 +40,51 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthorOrReadOnly,)
     pagination_class = LimitPagination
 
-    def action_post_delete(self, pk, serializer_class):
+    def action_post(self, pk, serializer_class):
         user = self.request.user
         recipe = get_object_or_404(Recipe, pk=pk)
         object = serializer_class.Meta.model.objects.filter(
             user=user, recipe=recipe
         )
+        serializer = serializer_class(
+            data={'user': user.id, 'recipe': pk},
+            context={'request': self.request}
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    def action_delete(self, pk, serializer_class):
+        user = self.request.user
+        recipe = get_object_or_404(Recipe, pk=pk)
+        object = serializer_class.Meta.model.objects.filter(
+            user=user, recipe=recipe
+        )
+        serializer = serializer_class(
+            data={'user': user.id, 'recipe': pk},
+            context={'request': self.request}
+        )
+        if object.exists():
+            object.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({'error': 'Этого рецепта нет в списке'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
-        if self.request.method == 'POST':
-            serializer = serializer_class(
-                data={'user': user.id, 'recipe': pk},
-                context={'request': self.request}
-            )
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        if self.request.method == 'DELETE':
-            if object.exists():
-                object.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response({'error': 'Этого рецепта нет в списке'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-    @action(methods=['POST', 'DELETE'], detail=True)
+    @action(methods=['POST'], detail=True)
     def favorite(self, request, pk):
-        return self.action_post_delete(pk, FavoriteSerializer)
+        return self.action_post(pk, FavoriteSerializer)
 
-    @action(methods=['POST', 'DELETE'], detail=True)
+    @favorite.mapping.delete
+    def favorite_delete(self, request, pk):
+        return self.action_delete(pk, FavoriteSerializer)
+
+    @action(methods=['POST'], detail=True)
     def shopping_cart(self, request, pk):
-        return self.action_post_delete(pk, ShoppingCartSerializer)
+        return self.action_post(pk, ShoppingCartSerializer)
+    
+    @shopping_cart.mapping.delete
+    def shopping_cart_delete(self, request, pk):
+        return self.action_delete(pk, ShoppingCartSerializer)
 
     @action(detail=False)
     def download_shopping_cart(self, request):
