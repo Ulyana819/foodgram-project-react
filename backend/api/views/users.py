@@ -36,7 +36,7 @@ class UsersViewSet(UserViewSet):
         Follow.objects.create(user=user, author=author)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    @action(methods=['DELETE'], 
+    @action(methods=['DELETE'],
             detail=True, )
     def subscribe_delete(self, request, id):
         user = request.user
