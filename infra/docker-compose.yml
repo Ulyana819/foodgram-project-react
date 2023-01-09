@@ -12,6 +12,7 @@ services:
     image: ulyana819/foodgram-project-react:latest
     restart: always
     volumes:
+      - ../frontend/build:/usr/share/nginx/html/
       - static_value:/app/back_static/
       - media_value:/app/back_media/
     depends_on:
