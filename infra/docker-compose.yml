@@ -8,6 +8,11 @@ services:
     env_file:
       - ./.env
 
+  frontend:
+    image: ulyana819/frontend:latest
+    volumes:
+      - ../frontend/:/app/result_build/
+
   web:
     image: ulyana819/foodgram-project-react:latest
     restart: always
