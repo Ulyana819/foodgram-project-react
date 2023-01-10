@@ -9,6 +9,7 @@ services:
       - ./.env
 
   frontend:
+    platform: linux/amd64
     image: ulyana819/frontend:latest
     volumes:
       - ../frontend/:/app/result_build/
