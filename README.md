@@ -1,3 +1,10 @@
+Адрес сайта: 158.160.57.1
+#### данные для входа (администратор)
+Логин: admin@ya.ru
+Пароль администратора: admin
+ИЛИ
+Логин: admin1@ya.ru
+Пароль администратора: admin1
 # Проект Foodgram – Продуктовый помощник
 На этом сервисе пользователи смогут публиковать рецепты, подписываться 
 на публикации других пользователей, добавлять понравившиеся рецепты в список
@@ -49,6 +56,15 @@
 git clone https://github.com/Ulyana819/foodgram-project-react.git
 ```
 - В директории /infra создайте файл .env, с переменными окружения
+```
+    DB_ENGINE=django.db.backends.postgresql  # указываем, что работаем с postgresql 
+    DB_NAME=postgres  # имя базы данных 
+    POSTGRES_USER=postgres  # логин для подключения к базе данных 
+    POSTGRES_PASSWORD=postgres  # пароль для подключения к БД (установите свой)
+    DB_HOST=db  # название сервиса (контейнера) 
+    DB_PORT=5432  # порт для подключения к БД
+    SECRET_KEY=KEY # ваш ключ
+```
 - Сборка и развертывание контейнеров
 ```
 docker-compose up -d --build
@@ -63,12 +79,7 @@ docker-compose exec backend python manage.py createsuperuser
 ```
 docker-compose exec backend python manage.py load_data
 ```
-- или наполните базу тестовыми данными (включают посты и пользователей)
-```
-docker-compose exec backend python manage.py loaddata data/data.json 
-```
 - Aдмин-панель Django доступна по адресу [`https://localhost/admin/`](https://localhost/admin/)
-- Документация доступна по адресу [`https://localhost/api/docs/`](`https://localhost/api/docs/`)
 
 #### Ресурсы проекта:
 
@@ -79,7 +90,6 @@ docker-compose exec backend python manage.py loaddata data/data.json
 .../api/ingredients/ - эндпоинт рецептов;  
 .../admin/ - эндпоинт админки сайта;  
 .../api/auth/ - действия с djoser авторизацией;  
-.../api/docs/redoc.html  подробная документация с примерами запросов и ответов
 
 ## Автор
 Шмакова Ульяна
