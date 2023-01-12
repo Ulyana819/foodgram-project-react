@@ -1,4 +1,4 @@
-from django.contrib.admin import ModelAdmin, TabularInline, register
+from django.contrib.admin import ModelAdmin, register, TabularInline
 
 from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                             ShoppingCart, Tag)
