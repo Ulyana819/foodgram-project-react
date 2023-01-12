@@ -8,6 +8,7 @@ from users.models import Follow, User
 class CustomUserAmin(UserAdmin):
     list_display = ('username', 'email', 'first_name', 'last_name')
     list_filter = ('username', 'email')
+    search_fields = ('username', 'email')
 
 
 @register(Follow)
