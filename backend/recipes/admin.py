@@ -7,7 +7,6 @@ from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
 class RecipeIngredientInline(TabularInline):
     model = RecipeIngredient
     min_num = 1
-    fields = ('ingredient', 'amount')
 
 
 @register(Ingredient)

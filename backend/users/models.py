@@ -52,10 +52,12 @@ class Follow(models.Model):
     def __str__(self):
         return f'Автор: {self.author}, подписчик: {self.user}'
 
-    def save(self, **kwargs):
+    def clean(self):
         if self.user == self.author:
             raise ValidationError("Невозможно подписаться на себя")
-        super().save()
+    
+    def save(self, **kwargs):
+        super().save() 
 
     class Meta:
         verbose_name = 'Подписка'

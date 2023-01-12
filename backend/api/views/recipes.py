@@ -41,7 +41,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthorOrReadOnly,)
     pagination_class = LimitPagination
 
-    def action_post(self, pk, serializer_class):
+    def _action_post(self, pk, serializer_class):
         user = self.request.user
         serializer = serializer_class(
             data={'user': user.id, 'recipe': pk},
@@ -51,7 +51,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    def action_delete(self, pk, serializer_class):
+    def _action_delete(self, pk, serializer_class):
         user = self.request.user
         recipe = get_object_or_404(Recipe, pk=pk)
         object = serializer_class.Meta.model.objects.filter(
@@ -65,19 +65,19 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(methods=['POST'], detail=True)
     def favorite(self, request, pk):
-        return self.action_post(pk, FavoriteSerializer)
+        return self._action_post(pk, FavoriteSerializer)
 
     @favorite.mapping.delete
     def favorite_delete(self, request, pk):
-        return self.action_delete(pk, FavoriteSerializer)
+        return self._action_delete(pk, FavoriteSerializer)
 
     @action(methods=['POST'], detail=True)
     def shopping_cart(self, request, pk):
-        return self.action_post(pk, ShoppingCartSerializer)
+        return self._action_post(pk, ShoppingCartSerializer)
 
     @shopping_cart.mapping.delete
     def shopping_cart_delete(self, request, pk):
-        return self.action_delete(pk, ShoppingCartSerializer)
+        return self._action_delete(pk, ShoppingCartSerializer)
 
     @action(detail=False)
     def download_shopping_cart(self, request):
