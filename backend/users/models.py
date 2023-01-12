@@ -55,9 +55,9 @@ class Follow(models.Model):
     def clean(self):
         if self.user == self.author:
             raise ValidationError("Невозможно подписаться на себя")
-    
+
     def save(self, **kwargs):
-        super().save() 
+        super().save()
 
     class Meta:
         verbose_name = 'Подписка'
