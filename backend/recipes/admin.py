@@ -1,12 +1,13 @@
-from django.contrib import admin
-from django.contrib.admin import ModelAdmin, register
+from django.contrib.admin import ModelAdmin, register, TabularInline
 from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                             ShoppingCart, Tag)
 
-class RecipeIngredientInline(admin.TabularInline):
+
+class RecipeIngredientInline(TabularInline):
     model = RecipeIngredient
     min_num = 1
     fields = ('ingredient', 'amount')
+
 
 @register(Ingredient)
 class IngredientAdmin(ModelAdmin):
