@@ -1,7 +1,12 @@
+from django.contrib import admin
 from django.contrib.admin import ModelAdmin, register
 from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                             ShoppingCart, Tag)
 
+class RecipeIngredientInline(admin.TabularInline):
+    model = RecipeIngredient
+    min_num = 1
+    fields = ('ingredient', 'amount')
 
 @register(Ingredient)
 class IngredientAdmin(ModelAdmin):
@@ -16,6 +21,7 @@ class TagAdmin(ModelAdmin):
 
 @register(Recipe)
 class RecipeAdmin(ModelAdmin):
+    inlines = [RecipeIngredientInline, ]
     list_display = ('name', 'author', 'pub_date', 'display_tags', 'favorite')
     list_filter = ('name', 'author', 'tags')
     search_fields = ('name',)
