@@ -1,6 +1,10 @@
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfgen import canvas
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
@@ -79,21 +83,41 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(detail=False)
     def download_shopping_cart(self, request):
-        user = request.user
+        user = self.request.user
         ingredients = RecipeIngredient.objects.filter(
-            recipe__shopping_carts__user=user
-        ).order_by(
-            'ingredient__name'
-        ).values(
-            'ingredient__name',
-            'ingredient__measurement_unit',
-        ).annotate(sum_amount=Sum('amount'))
-        shopping_cart = '\n'.join([
-            f'{ingredient["ingredient__name"]} - {ingredient["sum_amount"]}'
-            f'{ingredient["ingredient__measurement_unit"]}'
-            for ingredient in ingredients
-        ])
-        filename = 'shopping_cart.txt'
-        response = HttpResponse(shopping_cart, content_type='text/plain')
-        response['Content-Disposition'] = f'attachment; filename={filename}'
+            recipe__shoppingcart__user=user
+        ).prefetch_related(
+            'recipe_set', 'ingredientinrecipe_set'
+        ).annotate(
+            ingredient_amount=Sum('ingredientinrecipe__amount')
+        ).values_list('name', 'measurement_unit', 'ingredient_amount')
+        pdfmetrics.registerFont(
+            TTFont(
+                'SF-Pro',
+                Path(settings.DATA_ROOT, 'fonts/SF-Pro.ttf'), 'UTF-8'
+            )
+        )
+        response = HttpResponse(content_type='application/pdf')
+        filename = 'shopping_list.pdf'
+        response['Content-Disposition'] = (
+            'attachment; filename="%s"' % filename
+        )
+        file = canvas.Canvas(response, pagesize=A4)
+        file.setFont('SF-Pro', size=24)
+        file.drawString(200, 800, 'Список покупок')
+        file.setFont('SF-Pro', size=16)
+        height = 750
+        for index, (name, unit, amount) in enumerate(ingredients, 1):
+            file.drawString(
+                75, height, '%d. %s (%s) - %s' % (
+                    index, name, unit, amount
+                )
+            )
+            if height <= 50:
+                height = 800
+                file.showPage()
+                file.setFont('SF-Pro', size=16)
+            height -= 25
+        file.showPage()
+        file.save()
         return response
