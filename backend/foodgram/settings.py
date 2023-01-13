@@ -6,7 +6,12 @@ load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
+if os.environ.get('SECRET_KEY'):
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+else:
+    SECRET_KEY = str(uuid1())
+    warn('Using random SECRET_KEY. '
+         'Should configure it for production.')
 
 DEBUG = False
 
