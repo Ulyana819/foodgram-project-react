@@ -83,41 +83,41 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(detail=False)
     def download_shopping_cart(self, request):
-        user = self.request.user
-        ingredients = RecipeIngredient.objects.filter(
-            recipe__shoppingcart__user=user
-        ).prefetch_related(
-            'recipe_set', 'ingredientinrecipe_set'
-        ).annotate(
-            ingredient_amount=Sum('ingredientinrecipe__amount')
-        ).values_list('name', 'measurement_unit', 'ingredient_amount')
-        pdfmetrics.registerFont(
-            TTFont(
-                'SF-Pro',
-                Path(settings.DATA_ROOT, 'fonts/SF-Pro.ttf'), 'UTF-8'
-            )
-        )
         response = HttpResponse(content_type='application/pdf')
-        filename = 'shopping_list.pdf'
         response['Content-Disposition'] = (
-            'attachment; filename="%s"' % filename
+            "attachment; filename='shopping_cart.pdf'"
         )
-        file = canvas.Canvas(response, pagesize=A4)
-        file.setFont('SF-Pro', size=24)
-        file.drawString(200, 800, 'Список покупок')
-        file.setFont('SF-Pro', size=16)
-        height = 750
-        for index, (name, unit, amount) in enumerate(ingredients, 1):
-            file.drawString(
-                75, height, '%d. %s (%s) - %s' % (
-                    index, name, unit, amount
-                )
-            )
-            if height <= 50:
-                height = 800
-                file.showPage()
-                file.setFont('SF-Pro', size=16)
+        p = canvas.Canvas(response)
+        arial = ttfonts.TTFont('Arial', 'data/arial.ttf')
+        pdfmetrics.registerFont(arial)
+        p.setFont('Arial', 14)
+
+        ingredients = RecipeIngredient.objects.filter(
+            recipe__shopping_cart__user=request.user).values_list(
+            'ingredient__name', 'amount', 'ingredient__measurement_unit')
+
+        ingr_list = {}
+        for name, amount, unit in ingredients:
+            if name not in ingr_list:
+                ingr_list[name] = {'amount': amount, 'unit': unit}
+            else:
+                ingr_list[name]['amount'] += amount
+        height = 700
+
+        p.drawString(100, 750, 'Список покупок')
+        for i, (name, data) in enumerate(ingr_list.items(), start=1):
+            p.drawString(
+                80, height,
+                f"{i}. {name} – {data['amount']} {data['unit']}")
             height -= 25
-        file.showPage()
-        file.save()
+        p.showPage()
+
+        for i, (name, data) in enumerate(ingr_list.items(), start=30):
+            p.drawString(
+                80, height,
+                f"{i}. {name} – {data['amount']} {data['unit']}")
+            height -= 25
+        p.showPage()
+
+        p.save()
         return response
