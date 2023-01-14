@@ -108,10 +108,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 80, height,
                 f"{i}. {name} – {data['amount']} {data['unit']}")
             height -= 25
-        if height <= 40:
-            p.showPage()
-            is_page_done = True
-        if not is_page_done:
-            p.showPage()
+        p.showPage()
         p.save()
         return response
