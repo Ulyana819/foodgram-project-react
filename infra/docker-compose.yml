@@ -20,6 +20,7 @@ services:
     volumes:
       - static_value:/app/back_static/
       - media_value:/app/back_media/
+      - docs:/app/api/docs/
     depends_on:
       - db
     env_file:
