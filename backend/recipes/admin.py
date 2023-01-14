@@ -30,7 +30,7 @@ class RecipeAdmin(ModelAdmin):
               ('name', 'author'),
               'text',
               'cooking_time')
-    filter_horizonal = ('tags')
+    filter_horizontal = ('tags')
 
     def display_tags(self, obj):
         return ', '.join([tag.name for tag in obj.tags.all()])
