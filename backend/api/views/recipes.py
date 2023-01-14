@@ -100,7 +100,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             else:
                 ingr_list[name]['amount'] += amount
         height = 700
-        
+
         is_page_done = False
         p.drawString(100, 750, 'Список покупок')
         for i, (name, data) in enumerate(ingr_list.items(), start=1):
