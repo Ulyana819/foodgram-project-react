@@ -24,7 +24,7 @@ class TagAdmin(ModelAdmin):
 class RecipeAdmin(ModelAdmin):
     inlines = [RecipeIngredientInline, ]
     list_display = ('name', 'author', 'pub_date', 'display_tags', 'favorite')
-    list_filter = ('name', 'author')
+    list_filter = ('name', 'author', 'tags')
     search_fields = ('name',)
     readonly_fields = ('favorite',)
     fields = ('image',
@@ -33,6 +33,10 @@ class RecipeAdmin(ModelAdmin):
               ('tags', 'cooking_time'),
               'favorite')
     filter_horizontal = ('tags')
+
+    def display_tags(self, obj):
+        return ', '.join([tag.name for tag in obj.tags.all()])
+    display_tags.short_description = 'Теги'
 
 
 @register(RecipeIngredient)
