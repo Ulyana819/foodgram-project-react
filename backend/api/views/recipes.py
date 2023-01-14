@@ -101,17 +101,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 ingr_list[name]['amount'] += amount
         height = 700
 
-        is_page_done = False
         p.drawString(100, 750, 'Список покупок')
         for i, (name, data) in enumerate(ingr_list.items(), start=1):
             p.drawString(
                 80, height,
                 f"{i}. {name} – {data['amount']} {data['unit']}")
             height -= 25
-            if height <= 40:
-                p.showPage()
-                is_page_done = True
-        if not is_page_done:
-            p.showPage()
+        p.showPage()
         p.save()
         return response
