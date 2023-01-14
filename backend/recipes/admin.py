@@ -29,12 +29,16 @@ class RecipeAdmin(ModelAdmin):
     fields = ('image',
               ('name', 'author'),
               'text',
-              ('tags', 'cooking_time'),
-              'favorite')
+              ('tags', 'cooking_time'))
+    filter_horizonal = ('display_tags')
 
     def display_tags(self, obj):
         return ', '.join([tag.name for tag in obj.tags.all()])
     display_tags.short_description = 'Теги'
+
+    def favorite(self, obj):
+        return obj.favorite.count()
+    favorite.short_description = 'Раз в избранном'
 
 
 @register(RecipeIngredient)

@@ -1,7 +1,8 @@
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase import pdfmetrics, ttfonts
+from reportlab.pdfgen import canvas
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
@@ -107,6 +108,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 80, height,
                 f"{i}. {name} – {data['amount']} {data['unit']}")
             height -= 25
-        p.showPage()
+        if height <= 40:
+                p.showPage()
+                is_page_done = True
+        if not is_page_done:
+            p.showPage()
         p.save()
         return response
