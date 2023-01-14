@@ -80,33 +80,38 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(detail=False)
     def download_shopping_cart(self, request):
-        shopping_list = RecipeIngredient.objects.filter(
-            recipe__carts__user=user).values(
-            'ingredient__name',
-            'ingredient__measurement_unit'
-        ).annotate(quantity=Sum('amount')).order_by()
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = (
-            'attachment; filename="shopping_list.pdf"'
+            "attachment; filename='shopping_cart.pdf'"
         )
-        pdfmetrics.registerFont(TTFont('Sarai', 'Sarai.ttf', 'UTF-8'))
-        page = Canvas(filename=response)
-        page.setFont('Sarai', 24)
-        page.drawString(210, 800, 'Список покупок')
-        page.setFont('Sarai', 16)
-        height = 760
+        p = canvas.Canvas(response)
+        arial = ttfonts.TTFont('Arial', 'data/arial.ttf')
+        pdfmetrics.registerFont(arial)
+        p.setFont('Arial', 14)
+
+        ingredients = RecipeIngredient.objects.filter(
+            recipe__shopping_cart__user=request.user).values_list(
+            'ingredient__name', 'amount', 'ingredient__measurement_unit')
+
+        ingr_list = {}
+        for name, amount, unit in ingredients:
+            if name not in ingr_list:
+                ingr_list[name] = {'amount': amount, 'unit': unit}
+            else:
+                ingr_list[name]['amount'] += amount
+        height = 700
+        
         is_page_done = False
-        for idx, ingr in enumerate(shopping_list, start=1):
-            is_page_done = False
-            page.drawString(60, height, text=(
-                f'{idx}. {ingr["ingredient__name"]} - {ingr["quantity"]} '
-                f'{ingr["ingredient__measurement_unit"]}'
-            ))
-            height -= 30
+        p.drawString(100, 750, 'Список покупок')
+        for i, (name, data) in enumerate(ingr_list.items(), start=1):
+            p.drawString(
+                80, height,
+                f"{i}. {name} – {data['amount']} {data['unit']}")
+            height -= 25
             if height <= 40:
-                page.showPage()
+                p.showPage()
                 is_page_done = True
         if not is_page_done:
-            page.showPage()
-        page.save()
+            p.showPage()
+        p.save()
         return response
