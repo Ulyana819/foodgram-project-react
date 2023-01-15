@@ -26,7 +26,7 @@ class RecipeAdmin(ModelAdmin):
     list_display = ('name', 'author', 'pub_date', 'display_tags', 'favorite')
     list_filter = ('name', 'author', 'tags')
     search_fields = ('name',)
-    filter_horizontal = ('tags')
+    filter_horizontal = ('tags',)
 
     def display_tags(self, obj):
         return ', '.join([tag.name for tag in obj.tags.all()])
