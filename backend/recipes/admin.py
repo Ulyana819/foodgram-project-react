@@ -29,6 +29,7 @@ class RecipeAdmin(ModelAdmin):
     fields = ('image',
               ('name', 'author'),
               'text',
+              'tags'
               'cooking_time')
     filter_horizontal = ('tags')
 
