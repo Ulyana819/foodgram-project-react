@@ -26,11 +26,6 @@ class RecipeAdmin(ModelAdmin):
     list_display = ('name', 'author', 'pub_date', 'display_tags', 'favorite')
     list_filter = ('name', 'author', 'tags')
     search_fields = ('name',)
-    fields = ('image',
-              ('name', 'author'),
-              'text',
-              'tags',
-              'cooking_time')
     filter_horizontal = ('tags')
 
     def display_tags(self, obj):
